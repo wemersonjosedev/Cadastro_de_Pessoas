@@ -1,4 +1,8 @@
-flask
+Flask
 gunicorn
 SQLAlchemy
 pymysql
+Flask-SQLAlchemy
+Flask-Migrate
+Flask-Paginate
+Werkzeug
