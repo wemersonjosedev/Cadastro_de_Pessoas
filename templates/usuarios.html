@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block conteudo %}
+<div class="container my-4">
+    <h2 class="text-center mb-4">Lista de Cartões Sociais</h2>
+
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <input class="form-control" type="search" id="search-query" placeholder="Pesquisar..." aria-label="Search">
+        </div>
+        <a href="{{ url_for('cadastro') }}" class="btn btn-primary">
+            <i class="bi bi-person-plus"></i> Adicionar Usuário
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Foto</th>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Nome da Mãe</th>
+                    <th scope="col">Data de Nascimento</th>
+                    <th scope="col">RG</th>
+                    <th scope="col">CPF</th>
+                    <th scope="col">Data de Cadastro</th>
+                    <th scope="col">Ações</th>
+                </tr>
+            </thead>
+            <tbody id="usuarios-table-body">
+                {% for usuario in usuarios.items %} 
+                <tr class="list-user">
+                    <td>{{ usuario.id }}</td>
+                    <td>
+                        {% if usuario.foto %}
+                            <img src="{{ url_for('static', filename='uploads/fotos/' + usuario.foto) }}" alt="Foto do Usuário" height="50">
+                        {% else %}
+                            Sem foto
+                        {% endif %}
+                    </td>
+                    <td>{{ usuario.nome }}</td>
+                    <td>{{ usuario.nome_mae }}</td>
+                    <td>{% if usuario.dn %}{{ usuario.dn.strftime('%d/%m/%Y') }}{% endif %}</td>
+                    <td>{{ usuario.rg }}</td>
+                    <td>{{ usuario.cpf }}</td>
+                    <td>{% if usuario.datacadastro %}{{ usuario.datacadastro.strftime('%d/%m/%Y %H:%M') }}{% endif %}</td>
+                    <td class="text-center">
+                        <a href="{{ url_for('atualizar_usuario', id=usuario.id) }}" class="btn btn-warning btn-sm me-2">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <form action="{{ url_for('remover_usuario', id=usuario.id) }}" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-danger btn-sm me-2" onclick="return confirm('Tem certeza que deseja remover este usuário?')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                        <form action="">
+                            <button type="submit" class="btn btn-primary btn-sm me-2">
+                                <i class="bi bi-person-vcard"></i> 
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Implementação da paginação -->
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            {% if usuarios.has_prev %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('usuarios_view', page=usuarios.prev_num, q=request.args.get('q', '')) }}">Anterior</a></li>
+            {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a></li>
+            {% endif %}
+
+            {% for page_num in usuarios.iter_pages(left_edge=2, right_edge=2, left_current=2, right_current=2) %}
+                {% if page_num %}
+                    {% if usuarios.page == page_num %}
+                        <li class="page-item active" aria-current="page"><a class="page-link" href="#">{{ page_num }}</a></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for('usuarios_view', page=page_num, q=request.args.get('q', '')) }}">{{ page_num }}</a></li>
+                    {% endif %}
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if usuarios.has_next %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('usuarios_view', page=usuarios.next_num, q=request.args.get('q', '')) }}">Próximo</a></li>
+            {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Próximo</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#search-query').on('input', function() {
+        let query = $(this).val().toLowerCase();
+        $('#usuarios-table-body tr').filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(query) > -1);
+        });
+    });
+});
+</script>
+{% endblock %}

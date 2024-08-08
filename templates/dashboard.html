@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block conteudo %}
+<div class="row">
+    <div class="col-lg-3 col-md-6">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-header">Total de Cadastros</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ total_cadastros }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-header">Cadastros Hoje</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ cadastros_hoje }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-header">Cadastros no Mês</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ cadastros_mes }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card text-white bg-danger mb-3">
+            <div class="card-header">Cadastros no Ano</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ cadastros_ano }}</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                Cadastros ao Longo do Tempo
+            </div>
+            <div class="card-body">
+                <canvas id="cadastrosChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctx = document.getElementById('cadastrosChart').getContext('2d');
+        const cadastrosChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ labels|safe }},
+                datasets: [{
+                    label: 'Cadastros',
+                    data: {{ data|safe }},
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Datas'
+                        }
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Quantidade'
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
